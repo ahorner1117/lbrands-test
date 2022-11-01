@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>Page Title</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="">
+<style>
+</style>
+<script src=""></script>
+
+<body>
+    <h2>Add a User:</h2>
+    <input type="text" name="username" placeholder="name" id="name" value="">
+    <input type="email" name="email" placeholder="email" id="email" value="">
+    <button id="addUser" onClick="appendUser()">add user</button>
+    <h2>Users:</h2>
+    <ul id="users"></ul>
+
+    <div id="myModal" class="modal">
+
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="errorMessage"></p>
+        </div>
+
+    </div>
+
+
+    <table>
+        <tbody id="tableBody">
+            <tr id="firstRow">
+                <th id="headerName">Name</th>
+                <th id="headerEmail">Email</th>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+
+</html>
+
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    body {
+        padding: 20px;
+    }
+
+
+    td,
+    th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+
+    #errorMessage {
+        color: red;
+    }
+
+    .highlight {
+        background-color: red;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        padding-top: 100px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0, 0, 0);
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    h2 {
+        margin: 10px 0px;
+    }
+
+    /* Modal Content */
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+
+
+<script>
+/*
+Assignement:
+ 
+# HTML
+Complete the HTML to have semantic and compliant markups.
+ 
+# PURE JAVASCRIPT
+Dynamically add a user to the users list.
+1. Highlight the email input when a user enters an invalid email address and display following message: "please enter a valid email address" in red.
+2. Use the addUser function to submit the user's data.
+3. If the ajax request returns an error, display the error message in red.
+4. Display the newly added user in the users list when the request was successful. 
+ 
+# BONUS
+- make WCAG compliant
+- add some CSS3 properties
+ 
+*/
+
+
+    // START YOUR CODE HERE
+
+    // END YOUR CODE HERE
+    function appendUser() {
+        var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+        let email = document.getElementById("email").value;
+        let emailInput = document.getElementById("email");
+        let name = document.getElementById("name").value;
+        let userList = document.getElementById("users");
+        let firstRow = document.getElementById("tableBody");
+        let newRow = document.createElement("tr");
+        let newRowDataName = document.createElement("td");
+        let newRowDataEmail = document.createElement("td");
+        let modalText = document.getElementById("errorMessage");
+
+        if (email.match(validRegex)) {
+            newRowDataName.innerHTML = name;
+            newRowDataEmail.innerHTML = email;
+
+            newRow.appendChild(newRowDataName);
+            newRow.appendChild(newRowDataEmail);
+
+            firstRow.appendChild(newRow);
+
+            emailInput.classList.remove("highlight");
+
+        } else {
+            emailInput.classList.toggle("highlight");
+            
+            modalText.innerHTML = "Please enter a valid email address";
+            modal.style.display = "block";
+        }
+
+        addUser(name, email, (xhr) => {
+            console.log(xhr)
+            if (xhr.success == false) {
+            console.log("failed")
+                modalText.innerHTML = xhr.error;
+                modal.style.display = "block";
+            }
+            console.log('user added')
+        });
+
+    }
+
+    var modal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // Do not modify this function. Add user service wrapper.
+    function addUser(username, email, callback) {
+        var xhr = new XMLHttpRequest();
+        var response;
+        var success = (!!Math.round(Math.random()));
+        var modal = document.getElementById("myModal");
+
+        if (!success) {
+            response = JSON.stringify({
+                success: success,
+                error: "Oups, something went wrong!"
+            });
+
+        } else {
+            response = JSON.stringify({
+                success: success,
+                user: {
+                    username: username,
+                    email: email
+                }
+            });
+        }
+
+        xhr.open("POST", "/echo/json/");
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                callback(JSON.parse(xhr.responseText));
+            }
+        }
+
+        xhr.send("json=" + response);
+    };
+</script>
